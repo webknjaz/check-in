@@ -1,3 +1,10 @@
+.. image:: https://img.shields.io/pypi/v/check-in.svg
+   :target: https://pypi.org/p/check-in
+
+.. image:: https://travis-ci.com/webknjaz/check-in.svg?branch=master
+   :align: right
+   :target: http://travis-ci.com/webknjaz/check-in
+
 check-in
 ========
 
