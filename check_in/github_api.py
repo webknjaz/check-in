@@ -73,7 +73,6 @@ class GithubAPI:
 
     def __exit__(self, exception_type, exception_value, traceback):
         del self._gh_client
-        #import ipdb; ipdb.set_trace()
         return any(v is None
                    for v in (exception_type, exception_value, traceback))
 
