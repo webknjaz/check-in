@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+import json
 import sys
 from warnings import catch_warnings
 
@@ -46,6 +47,11 @@ def cli(ctx, **kwargs):
     gh_api = GithubAPI(app_id, installation_id, private_key_file, repo_slug)
     ctx.obj.update(kwargs)
     ctx.obj['github_api'] = gh_api
+    for opt in 'output', 'actions':
+        try:
+            ctx.obj[opt] = json.loads(ctx.obj[opt])
+        except (KeyError, TypeError):
+            """The option hasn't been provided."""
 
 
 @cli.command()
