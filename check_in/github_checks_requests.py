@@ -44,7 +44,15 @@ class CheckAnnotation:
     blob_href: str = str_attrib()
     start_line: int = int_attrib()
     end_line: int = int_attrib()
-    warning_level: str = str_attrib()
+    warning_level: str = str_attrib(
+        validator=attr.validators.in_(
+            (
+                'notice',
+                'warning',
+                'failure',
+            )
+        )
+    )
     message: str = str_attrib()
     title: Optional[str] = optional_str_attrib()
     raw_details: Optional[str] = optional_str_attrib()
