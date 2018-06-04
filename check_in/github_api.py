@@ -24,7 +24,6 @@ class GithubClient:
 
     @property
     def user_agent(self):
-        print(self._user_agent)
         return self._user_agent
 
     @user_agent.setter
