@@ -29,6 +29,7 @@ ENV_VAR_TMPL = f'{ENV_VAR_PREFIX}{{var_name}}'
 @click.option('--app-id', prompt=True, envvar=ENV_VAR_TMPL.format(var_name='APP_ID'), type=int)
 @click.option('--installation-id', prompt=True, envvar=ENV_VAR_TMPL.format(var_name='INSTALLATION_ID'), type=int)
 @click.option('--repo-slug', prompt=True, envvar=ENV_VAR_TMPL.format(var_name='REPO_SLUG'))
+@click.option('--user-agent', default=None)
 @click.option('--name', prompt=True)
 @click.option('--details-url')
 @click.option('--external-id')
@@ -44,7 +45,8 @@ def cli(ctx, **kwargs):
     installation_id = kwargs.pop('installation_id')
     private_key_file = kwargs.pop('private_key_file')
     repo_slug = kwargs.pop('repo_slug')
-    gh_api = GithubAPI(app_id, installation_id, private_key_file, repo_slug)
+    user_agent = kwargs.pop('user_agent')
+    gh_api = GithubAPI(app_id, installation_id, private_key_file, repo_slug, user_agent)
     ctx.obj.update(kwargs)
     ctx.obj['github_api'] = gh_api
     for opt in 'output', 'actions':

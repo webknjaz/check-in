@@ -3,24 +3,42 @@ import os.path
 
 import github
 
+from . import __version__ as check_in_version
 from .github_checks_requests import NewCheckRequest, UpdateCheckRequest, to_gh_query
 
 
 cache_once = partial(lru_cache, maxsize=1)
 
+DEFAULT_USER_AGENT = f'check-in/{check_in_version} (+https://pypi.org/p/check-in)'
+
 
 class GithubClient:
-    def __init__(self, app_id, installation_id, private_key_file, repo_slug=None):
+    def __init__(self, app_id, installation_id, private_key_file, repo_slug=None, user_agent_prefix=None):
         self._gh_int = get_github_integration(app_id, private_key_file)
         self._gh_client = get_installation_client(self._gh_int, installation_id)
         self._repo_slug = repo_slug
+        self.user_agent = user_agent_prefix
 
     def __getattr__(self, key):
         return getattr(self._gh_client, key)
 
+    @property
+    def user_agent(self):
+        print(self._user_agent)
+        return self._user_agent
+
+    @user_agent.setter
+    def user_agent(self, user_agent_prefix):
+        self._user_agent = DEFAULT_USER_AGENT
+        if user_agent_prefix:
+            self._user_agent = f'{user_agent_prefix} built with {self._user_agent}'
+
     def _get_check_caller(self):
         rp = self._gh_client.get_repo(self._repo_slug)
-        check_headers={'Accept': 'application/vnd.github.antiope-preview+json'}
+        check_headers={
+            'Accept': 'application/vnd.github.antiope-preview+json',
+            'User-Agent': self.user_agent,
+        }
         return partial(
             rp._requester.requestJsonAndCheck,
             headers=check_headers,
@@ -56,11 +74,12 @@ class GithubClient:
 
 
 class GithubAPI:
-    def __init__(self, app_id, installation_id, private_key_file, repo_slug):
+    def __init__(self, app_id, installation_id, private_key_file, repo_slug, user_agent_prefix=None):
         self.app_id = app_id
         self.installation_id = installation_id
         self.private_key_file = os.path.expanduser(os.path.expandvars(private_key_file))
         self.repo_slug = repo_slug
+        self.user_agent_prefix = user_agent_prefix
 
     def __enter__(self):
         self._gh_client = GithubClient(
@@ -68,6 +87,7 @@ class GithubAPI:
             self.installation_id,
             self.private_key_file,
             self.repo_slug,
+            self.user_agent_prefix,
         )
         return self._gh_client
 
