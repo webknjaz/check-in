@@ -102,7 +102,7 @@ class BaseCheckRequestMixin:
     details_url: Optional[str] = optional_str_attrib()
     external_id: Optional[str] = optional_str_attrib()
     status: Optional[str] = attr.ib(
-        default=None,
+        default='queued',
         validator=attr.validators.optional(
             attr.validators.in_(
                 (
