@@ -81,7 +81,7 @@ class CheckActions:
 class CheckOutput:
     title: str = str_attrib()
     summary: str = str_attrib()
-    text: Optional[str] = optional_str_attrib()
+    text: Optional[str] = optional_str_attrib()  # it looks like it's not optional; it can be empty string, but not missing
     annotations: List[CheckAnnotation] = optional_list_attrib(converter=partial(optional_list_converter, convert_to_cls=CheckAnnotation))
     images: List[CheckImage] = optional_list_attrib(converter=partial(optional_list_converter, convert_to_cls=CheckImage))
 
