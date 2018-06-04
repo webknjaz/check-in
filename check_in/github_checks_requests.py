@@ -7,7 +7,7 @@ import attr
 __all__ = 'NewCheckRequest', 'UpdateCheckRequest', 'to_gh_query'
 
 
-str_attrib = partial(attr.ib, converter=str)
+str_attrib = partial(attr.ib, converter=lambda s: str(s) if s is not None else '')
 
 optional_attrib = partial(
     attr.ib,
