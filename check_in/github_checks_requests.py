@@ -56,7 +56,7 @@ class CheckImage:
 
 
 @attr.dataclass
-class CheckActions:  # 3 actions? array?
+class CheckActions:
     label: str = str_attrib()
     description: str = str_attrib()
     identifier: str = str_attrib()
@@ -122,7 +122,7 @@ class BaseCheckRequestMixin:
     )
     completed_at: Optional[str] = optional_str_attrib()  # [required] if 'conclusion' is set  # '2018-05-27T14:30:33Z',
     output: Optional[CheckOutput] = optional_attrib(converter=partial(optional_converter, convert_to_cls=CheckOutput))
-    actions: Optional[CheckActions] = optional_attrib(converter=partial(optional_converter, convert_to_cls=CheckActions))  # 3 actions? array?
+    actions: List[CheckActions] = optional_list_attrib(converter=partial(optional_list_converter, convert_to_cls=CheckActions))
 
     @conclusion.validator
     def depends_on_status(self, attribute, value):
@@ -133,6 +133,11 @@ class BaseCheckRequestMixin:
     def depends_on_completed_at(self, attribute, value):
         if self.conclusion and not value:
             raise ValueError(f'`{attribute.name}` must be provided if conclusion is present')
+
+    @actions.validator
+    def actions_up_to_3(self, attribute, value):
+        if len(value) > 3:
+            raise ValueError(f'`{attribute.name}` must not exceed 3 items.')
 
 
 @attr.dataclass
