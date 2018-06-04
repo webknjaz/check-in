@@ -9,6 +9,8 @@ __all__ = 'NewCheckRequest', 'UpdateCheckRequest', 'to_gh_query'
 
 str_attrib = partial(attr.ib, converter=lambda s: str(s) if s is not None else '')
 
+int_attrib = partial(attr.ib, converter=int)
+
 optional_attrib = partial(
     attr.ib,
     default=None,
@@ -40,8 +42,8 @@ def optional_list_converter(args_list, convert_to_cls):
 class CheckAnnotation:
     filename: str = str_attrib()
     blob_href: str = str_attrib()
-    start_line: str = str_attrib()
-    end_line: str = str_attrib()
+    start_line: int = int_attrib()
+    end_line: int = int_attrib()
     warning_level: str = str_attrib()
     message: str = str_attrib()
     title: Optional[str] = optional_str_attrib()
