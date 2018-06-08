@@ -140,13 +140,13 @@ class BaseCheckRequestMixin:
             raise ValueError(f'`{attribute.name}` must be provided if status is completed')
 
     @completed_at.validator
-    def depends_on_completed_at(self, attribute, value):
-        if self.conclusion and not value:
+    def depends_on_conclusion(self, attribute, value):
+        if self.conclusion is not None and not value:
             raise ValueError(f'`{attribute.name}` must be provided if conclusion is present')
 
     @actions.validator
     def actions_up_to_3(self, attribute, value):
-        if len(value) > 3:
+        if value is not None and len(value) > 3:
             raise ValueError(f'`{attribute.name}` must not exceed 3 items.')
 
 
