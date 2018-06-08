@@ -73,17 +73,17 @@ class CheckActions:
 
     @label.validator
     def label_up_to_20(self, attribute, value):
-        if value and len(value) > 20:
+        if len(value) > 20:
             raise ValueError(f'`{attribute.name}` must not exceed 20 characters.')
 
     @description.validator
     def description_up_to_40(self, attribute, value):
-        if value and len(value) > 40:
+        if len(value) > 40:
             raise ValueError(f'`{attribute.name}` must not exceed 40 characters.')
 
     @identifier.validator
     def identifier_up_to_20(self, attribute, value):
-        if value and len(value) > 20:
+        if len(value) > 20:
             raise ValueError(f'`{attribute.name}` must not exceed 20 characters.')
 
 
@@ -146,7 +146,7 @@ class BaseCheckRequestMixin:
 
     @actions.validator
     def actions_up_to_3(self, attribute, value):
-        if value and len(value) > 3:
+        if len(value) > 3:
             raise ValueError(f'`{attribute.name}` must not exceed 3 items.')
 
 
