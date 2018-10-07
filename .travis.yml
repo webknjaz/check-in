@@ -6,8 +6,6 @@ language: python
 python:
 - 3.6
 
-group: edge
-
 install:
 - skip  # TODO: install test dependencies
 
