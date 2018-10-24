@@ -39,7 +39,7 @@ def optional_converter(kwargs_dict, convert_to_cls):
 
 def optional_list_converter(args_list, convert_to_cls):
     if args_list is not None and isinstance(args_list, list):
-        return [optional_converter(kwargs_dict, convert_to_cls) for kwargs_dict in args_list] or None
+        return [optional_converter(kwargs_dict, convert_to_cls) for kwargs_dict in args_list]
     return args_list
 
 
