@@ -49,8 +49,6 @@ class CheckAnnotation:
     blob_href: str = str_attrib()
     start_line: int = int_attrib()
     end_line: int = int_attrib()
-    start_column: int = optional_int_attrib()
-    end_column: int = optional_int_attrib()
     annotation_level: str = str_attrib(
         validator=attr.validators.in_(
             (
@@ -61,6 +59,8 @@ class CheckAnnotation:
         )
     )
     message: str = str_attrib()
+    start_column: Optional[int] = optional_int_attrib()
+    end_column: Optional[int] = optional_int_attrib()
     title: Optional[str] = optional_str_attrib()
     raw_details: Optional[str] = optional_str_attrib()
 
