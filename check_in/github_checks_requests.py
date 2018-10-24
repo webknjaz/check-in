@@ -46,7 +46,6 @@ def optional_list_converter(args_list, convert_to_cls):
 @attr.dataclass
 class CheckAnnotation:
     path: str = str_attrib()
-    blob_href: str = str_attrib()
     start_line: int = int_attrib()
     end_line: int = int_attrib()
     annotation_level: str = str_attrib(
