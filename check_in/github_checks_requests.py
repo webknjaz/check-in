@@ -16,6 +16,11 @@ optional_attrib = partial(
     default=None,
 )
 
+optional_int_attrib = partial(
+    optional_attrib,
+    validator=attr.validators.optional(lambda *_: int(_[-1])),
+)
+
 optional_str_attrib = partial(
     optional_attrib,
     validator=attr.validators.optional(lambda *_: str(_[-1])),
@@ -40,11 +45,13 @@ def optional_list_converter(args_list, convert_to_cls):
 
 @attr.dataclass
 class CheckAnnotation:
-    filename: str = str_attrib()
+    path: str = str_attrib()
     blob_href: str = str_attrib()
     start_line: int = int_attrib()
     end_line: int = int_attrib()
-    warning_level: str = str_attrib(
+    start_column: int = optional_int_attrib()
+    end_column: int = optional_int_attrib()
+    annotation_level: str = str_attrib(
         validator=attr.validators.in_(
             (
                 'notice',
