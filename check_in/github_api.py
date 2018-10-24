@@ -16,6 +16,7 @@ class GithubClient:
     def __init__(self, app_id, installation_id, private_key_file, repo_slug=None, user_agent_prefix=None):
         self._gh_int = get_github_integration(app_id, private_key_file)
         self._gh_client = get_installation_client(self._gh_int, installation_id)
+        self._check_runs_base_uri = f'/repos/{_repo_slug}/check-runs'
         self._repo_slug = repo_slug
         self.user_agent = user_agent_prefix
 
@@ -47,7 +48,7 @@ class GithubClient:
         checker = self._get_check_caller()
         return partial(
             checker,
-            url=f'http://api.github.com/repos/{self._repo_slug}/check-runs',
+            url=self._check_runs_base_uri,
             verb='POST',
         )
 
@@ -55,7 +56,7 @@ class GithubClient:
         checker = self._get_check_caller()
         return partial(
             checker,
-            url=f'http://api.github.com/repos/{self._repo_slug}/check-runs/{check_run_id}',
+            url=f'{self._check_runs_base_uri}/{check_run_id}',
             verb='PATCH',
         )
 
