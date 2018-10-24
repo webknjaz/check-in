@@ -184,5 +184,5 @@ def to_gh_query(req):
     return {
         k: conditional_to_gh_query(v)  # recursive if dataclass or list
         for k, v in attr.asdict(req).items()
-        if v is not None
+        if v is not None or (isinstance(v, (list, dict)) and not len(v))
     }
