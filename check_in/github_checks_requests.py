@@ -177,6 +177,11 @@ def conditional_to_gh_query(req):
         return to_gh_query(req)
     if isinstance(req, list):
         return list(map(conditional_to_gh_query, req))
+    if isinstance(req, dict):
+        return {
+            k: conditional_to_gh_query(v) for k, v in req.items()
+            if v is not None or (isinstance(v, (list, dict)) and not len(v))
+        }
     return req
 
 
