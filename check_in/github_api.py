@@ -13,9 +13,16 @@ DEFAULT_USER_AGENT = f'check-in/{check_in_version} (+https://pypi.org/p/check-in
 
 
 class GithubClient:
-    def __init__(self, app_id, installation_id, private_key_file, repo_slug=None, user_agent_prefix=None):
+    def __init__(
+        self, app_id, installation_id, private_key_file,
+        repo_slug=None, user_agent_prefix=None,
+        github_url=github.MainClass.DEFAULT_BASE_URL,
+    ):
         self._gh_int = get_github_integration(app_id, private_key_file)
-        self._gh_client = get_installation_client(self._gh_int, installation_id)
+        self._gh_client = get_installation_client(
+            self._gh_int, installation_id,
+            github_url,
+        )
         self._check_runs_base_uri = f'/repos/{repo_slug}/check-runs'
         self._repo_slug = repo_slug
         self.user_agent = user_agent_prefix
@@ -113,5 +120,11 @@ def get_installation_auth_token(gh_integration, install_id):
     return gh_integration.get_access_token(install_id).token
 
 
-def get_installation_client(gh_integration, install_id):
-    return github.Github(get_installation_auth_token(gh_integration, install_id))
+def get_installation_client(
+    gh_integration, install_id,
+    github_url=github.MainClass.DEFAULT_BASE_URL,
+):
+    return github.Github(
+        get_installation_auth_token(gh_integration, install_id),
+        base_url=github_url,
+    )

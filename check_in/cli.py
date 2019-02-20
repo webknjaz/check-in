@@ -6,6 +6,7 @@ from warnings import catch_warnings
 
 import click
 from envparse import Env
+from github.MainClass import DEFAULT_BASE_URL
 
 from .github_api import GithubAPI
 
@@ -25,6 +26,7 @@ ENV_VAR_TMPL = f'{ENV_VAR_PREFIX}{{var_name}}'
 
 
 @click.group()
+@click.option('--github-url', default=DEFAULT_BASE_URL, envvar=ENV_VAR_TMPL.format(var_name='GITHUB_URL'))
 @click.option('--private-key-file', prompt=True, envvar=ENV_VAR_TMPL.format(var_name='PRIVATE_KEY_FILE'))
 @click.option('--app-id', prompt=True, envvar=ENV_VAR_TMPL.format(var_name='APP_ID'), type=int)
 @click.option('--installation-id', prompt=True, envvar=ENV_VAR_TMPL.format(var_name='INSTALLATION_ID'), type=int)
@@ -44,9 +46,13 @@ def cli(ctx, **kwargs):
     app_id = kwargs.pop('app_id')
     installation_id = kwargs.pop('installation_id')
     private_key_file = kwargs.pop('private_key_file')
+    github_url = kwargs.pop('github_url')
     repo_slug = kwargs.pop('repo_slug')
     user_agent = kwargs.pop('user_agent')
-    gh_api = GithubAPI(app_id, installation_id, private_key_file, repo_slug, user_agent)
+    gh_api = GithubAPI(
+        app_id, installation_id, private_key_file,
+        repo_slug, user_agent, github_url,
+    )
     ctx.obj.update(kwargs)
     ctx.obj['github_api'] = gh_api
     for opt in 'output', 'actions':
