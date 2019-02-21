@@ -151,16 +151,16 @@ class PatchedGithubIntegration(github.GithubIntegration):
                 completed=True
             )
         elif response.status_code == 403:
-            raise github.GithubException.BadCredentialsException(
+            raise github.BadCredentialsException(
                 status=response.status_code,
                 data=response.text
             )
         elif response.status_code == 404:
-            raise github.GithubException.UnknownObjectException(
+            raise github.UnknownObjectException(
                 status=response.status_code,
                 data=response.text
             )
-        raise github.GithubException.GithubException(
+        raise github.GithubException(
             status=response.status_code,
             data=response.text
         )
