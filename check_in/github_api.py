@@ -85,12 +85,17 @@ class GithubClient:
 
 
 class GithubAPI:
-    def __init__(self, app_id, installation_id, private_key_file, repo_slug, user_agent_prefix=None):
+    def __init__(
+        self, app_id, installation_id, private_key_file,
+        repo_slug, user_agent_prefix=None,
+        github_url=github.MainClass.DEFAULT_BASE_URL,
+    ):
         self.app_id = app_id
         self.installation_id = installation_id
         self.private_key_file = os.path.expanduser(os.path.expandvars(private_key_file))
         self.repo_slug = repo_slug
         self.user_agent_prefix = user_agent_prefix
+        self.github_url = github_url
 
     def __enter__(self):
         self._gh_client = GithubClient(
@@ -99,6 +104,7 @@ class GithubAPI:
             self.private_key_file,
             self.repo_slug,
             self.user_agent_prefix,
+            self.github_url,
         )
         return self._gh_client
 
