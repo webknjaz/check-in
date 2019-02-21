@@ -2,6 +2,7 @@ from functools import lru_cache, partial
 import os.path
 
 import github
+import requests
 
 from . import __version__ as check_in_version
 from .github_checks_requests import NewCheckRequest, UpdateCheckRequest, to_gh_query
@@ -18,7 +19,10 @@ class GithubClient:
         repo_slug=None, user_agent_prefix=None,
         github_url=github.MainClass.DEFAULT_BASE_URL,
     ):
-        self._gh_int = get_github_integration(app_id, private_key_file)
+        self._gh_int = get_github_integration(
+            app_id, private_key_file,
+            github_url,
+        )
         self._gh_client = get_installation_client(
             self._gh_int, installation_id,
             github_url,
@@ -104,6 +108,58 @@ class GithubAPI:
                    for v in (exception_type, exception_value, traceback))
 
 
+class PatchedGithubIntegration(github.GithubIntegration):
+    def __init__(
+        self, integration_id, private_key,
+        github_url=github.MainClass.DEFAULT_BASE_URL,
+    ):
+        self.__github_url = github_url
+        super().__init__(integration_id, private_key)
+
+    def get_access_token(self, installation_id, user_id=None):
+        """
+        Get an access token for the given installation id.
+        POSTs https://api.github.com/installations/<installation_id>/access_tokens
+        :param user_id: int
+        :param installation_id: int
+        :return: :class:`github.InstallationAuthorization.InstallationAuthorization`
+        """
+        body = {}
+        if user_id:
+            body = {"user_id": user_id}
+        response = requests.post(
+            f"{self.__github_url}/installations/{installation_id}/access_tokens",
+            headers={
+                "Authorization": "Bearer {}".format(self.create_jwt()),
+                "Accept": github.Consts.mediaTypeIntegrationPreview,
+                "User-Agent": "PyGithub/Python"
+            },
+            json=body
+        )
+
+        if response.status_code == 201:
+            return github.InstallationAuthorization.InstallationAuthorization(
+                requester=None,  # not required, this is a NonCompletableGithubObject
+                headers={},  # not required, this is a NonCompletableGithubObject
+                attributes=response.json(),
+                completed=True
+            )
+        elif response.status_code == 403:
+            raise github.GithubException.BadCredentialsException(
+                status=response.status_code,
+                data=response.text
+            )
+        elif response.status_code == 404:
+            raise github.GithubException.UnknownObjectException(
+                status=response.status_code,
+                data=response.text
+            )
+        raise github.GithubException.GithubException(
+            status=response.status_code,
+            data=response.text
+        )
+
+
 @cache_once()
 def get_app_key(key_path):
     with open(key_path) as f:
@@ -111,9 +167,9 @@ def get_app_key(key_path):
 
 
 @cache_once()
-def get_github_integration(app_id, key_path):
+def get_github_integration(app_id, key_path, github_url):
     private_key = get_app_key(key_path)
-    return github.GithubIntegration(app_id, private_key)
+    return PatchedGithubIntegration(app_id, private_key, github_url)
 
 
 def get_installation_auth_token(gh_integration, install_id):
